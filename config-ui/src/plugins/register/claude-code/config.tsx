@@ -24,7 +24,7 @@ export const ClaudeCodeConfig: IPluginConfig = {
   plugin: 'claude-code',
   name: 'Claude Code',
   icon: ({ color }) => <Icon fill={color} />,
-  sort: 19,
+  sort: 6.3,
   isBeta: true,
   connection: {
     docLink: 'https://platform.claude.com/docs/en/api/admin/overview',
