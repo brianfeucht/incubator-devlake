@@ -73,6 +73,7 @@ RUN apt-get update && apt-get install -y \
     libssh2-1 \
     libssl3 \
     ca-certificates \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy libgit2
