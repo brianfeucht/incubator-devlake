@@ -30,14 +30,14 @@ export const ClaudeCodeConfig: IPluginConfig = {
     docLink: 'https://platform.claude.com/docs/en/api/admin/overview',
     initialValues: {
       endpoint: 'https://api.anthropic.com',
-      adminApiKey: '',
+      token: '',
       rateLimitPerHour: 1200,
     },
     fields: [
       'name',
       'endpoint',
       {
-        key: 'adminApiKey',
+        key: 'token',
         label: 'Admin API Key',
         subLabel:
           'Create an Admin API Key in the Anthropic Console at https://console.anthropic.com. The key must have Admin permissions to access cost and usage reports.',

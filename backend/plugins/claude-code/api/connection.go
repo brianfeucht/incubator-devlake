@@ -97,8 +97,8 @@ func validateConnection(c *models.ClaudeConnection) errors.Error {
 	if c == nil {
 		return errors.BadInput.New("connection is required")
 	}
-	if strings.TrimSpace(c.AdminApiKey) == "" {
-		return errors.BadInput.New("adminApiKey is required")
+	if strings.TrimSpace(c.Token) == "" {
+		return errors.BadInput.New("token is required")
 	}
 	return nil
 }

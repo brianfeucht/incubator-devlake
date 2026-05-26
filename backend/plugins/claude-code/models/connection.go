@@ -34,24 +34,24 @@ const (
 // ClaudeConn holds Claude Code (Anthropic Admin API) connection settings.
 type ClaudeConn struct {
 	helper.RestConnection `mapstructure:",squash"`
-	// AdminApiKey is the Anthropic Admin API key (sk-ant-admin-...)
-	AdminApiKey      string `mapstructure:"adminApiKey" json:"adminApiKey"`
+	// Token is the Anthropic Admin API key (sk-ant-admin-...)
+	Token            string `mapstructure:"token" json:"token"`
 	RateLimitPerHour int    `mapstructure:"rateLimitPerHour" json:"rateLimitPerHour"`
 }
 
 // SetupAuthentication attaches the x-api-key and anthropic-version headers.
 func (conn *ClaudeConn) SetupAuthentication(req *http.Request) errors.Error {
-	if conn == nil || strings.TrimSpace(conn.AdminApiKey) == "" {
-		return errors.BadInput.New("adminApiKey is required")
+	if conn == nil || strings.TrimSpace(conn.Token) == "" {
+		return errors.BadInput.New("token is required")
 	}
-	req.Header.Set("x-api-key", strings.TrimSpace(conn.AdminApiKey))
+	req.Header.Set("x-api-key", strings.TrimSpace(conn.Token))
 	req.Header.Set("anthropic-version", "2023-06-01")
 	return nil
 }
 
 func (conn *ClaudeConn) Sanitize() ClaudeConn {
 	clone := *conn
-	clone.AdminApiKey = utils.SanitizeString(clone.AdminApiKey)
+	clone.Token = utils.SanitizeString(clone.Token)
 	return clone
 }
 
@@ -71,12 +71,12 @@ func (c ClaudeConnection) Sanitize() ClaudeConnection {
 }
 
 func (c *ClaudeConnection) MergeFromRequest(target *ClaudeConnection, body map[string]interface{}) error {
-	originalKey := target.AdminApiKey
+	originalKey := target.Token
 	if err := helper.DecodeMapStruct(body, target, true); err != nil {
 		return err
 	}
-	if target.AdminApiKey == "" || target.AdminApiKey == utils.SanitizeString(originalKey) {
-		target.AdminApiKey = originalKey
+	if target.Token == "" || target.Token == utils.SanitizeString(originalKey) {
+		target.Token = originalKey
 	}
 	return nil
 }

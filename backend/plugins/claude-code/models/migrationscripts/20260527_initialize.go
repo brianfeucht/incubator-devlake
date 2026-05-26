@@ -52,7 +52,7 @@ type claudeConnection20260526 struct {
 	Endpoint         string `gorm:"type:varchar(255)"`
 	Proxy            string `gorm:"type:varchar(255)"`
 	RateLimitPerHour int
-	AdminApiKey      string `gorm:"type:varchar(255)"`
+	Token            string `gorm:"type:varchar(255)"`
 }
 
 func (claudeConnection20260526) TableName() string { return "_tool_claude_connections" }
