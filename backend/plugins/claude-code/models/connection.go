@@ -1,0 +1,92 @@
+/*
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+package models
+
+import (
+	"net/http"
+	"strings"
+
+	"github.com/apache/incubator-devlake/core/errors"
+	"github.com/apache/incubator-devlake/core/utils"
+	helper "github.com/apache/incubator-devlake/helpers/pluginhelper/api"
+)
+
+const (
+	DefaultEndpoint        = "https://api.anthropic.com"
+	DefaultRateLimitPerHour = 1200
+)
+
+// ClaudeConn holds Claude Code (Anthropic Admin API) connection settings.
+type ClaudeConn struct {
+	helper.RestConnection `mapstructure:",squash"`
+	// AdminApiKey is the Anthropic Admin API key (sk-ant-admin-...)
+	AdminApiKey      string `mapstructure:"adminApiKey" json:"adminApiKey"`
+	RateLimitPerHour int    `mapstructure:"rateLimitPerHour" json:"rateLimitPerHour"`
+}
+
+// SetupAuthentication attaches the x-api-key and anthropic-version headers.
+func (conn *ClaudeConn) SetupAuthentication(req *http.Request) errors.Error {
+	if conn == nil || strings.TrimSpace(conn.AdminApiKey) == "" {
+		return errors.BadInput.New("adminApiKey is required")
+	}
+	req.Header.Set("x-api-key", strings.TrimSpace(conn.AdminApiKey))
+	req.Header.Set("anthropic-version", "2023-06-01")
+	return nil
+}
+
+func (conn *ClaudeConn) Sanitize() ClaudeConn {
+	clone := *conn
+	clone.AdminApiKey = utils.SanitizeString(clone.AdminApiKey)
+	return clone
+}
+
+// ClaudeConnection persists connection details in the database.
+type ClaudeConnection struct {
+	helper.BaseConnection `mapstructure:",squash"`
+	ClaudeConn            `mapstructure:",squash"`
+}
+
+func (ClaudeConnection) TableName() string {
+	return "_tool_claude_connections"
+}
+
+func (c ClaudeConnection) Sanitize() ClaudeConnection {
+	c.ClaudeConn = c.ClaudeConn.Sanitize()
+	return c
+}
+
+func (c *ClaudeConnection) MergeFromRequest(target *ClaudeConnection, body map[string]interface{}) error {
+	originalKey := target.AdminApiKey
+	if err := helper.DecodeMapStruct(body, target, true); err != nil {
+		return err
+	}
+	if target.AdminApiKey == "" || target.AdminApiKey == utils.SanitizeString(originalKey) {
+		target.AdminApiKey = originalKey
+	}
+	return nil
+}
+
+// Normalize fills default values.
+func (c *ClaudeConnection) Normalize() {
+	if c.Endpoint == "" {
+		c.Endpoint = DefaultEndpoint
+	}
+	if c.RateLimitPerHour <= 0 {
+		c.RateLimitPerHour = DefaultRateLimitPerHour
+	}
+}

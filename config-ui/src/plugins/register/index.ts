@@ -42,6 +42,7 @@ import { TeambitionConfig } from './teambition';
 import { TestmoConfig } from './testmo';
 import { SlackConfig } from './slack/config';
 import { SentryConfig } from './sentry';
+import { ClaudeCodeConfig } from './claude-code';
 
 export const pluginConfigs: IPluginConfig[] = [
   ArgoCDConfig,
@@ -61,6 +62,7 @@ export const pluginConfigs: IPluginConfig[] = [
   RootlyConfig,
   SlackConfig,
   SentryConfig,
+  ClaudeCodeConfig,
   QDevConfig,
   SonarQubeConfig,
   TAPDConfig,
