@@ -41,6 +41,7 @@ import { QDevConfig } from './q-dev';
 import { TeambitionConfig } from './teambition';
 import { TestmoConfig } from './testmo';
 import { SlackConfig } from './slack/config';
+import { SentryConfig } from './sentry';
 
 export const pluginConfigs: IPluginConfig[] = [
   ArgoCDConfig,
@@ -59,6 +60,7 @@ export const pluginConfigs: IPluginConfig[] = [
   PagerDutyConfig,
   RootlyConfig,
   SlackConfig,
+  SentryConfig,
   QDevConfig,
   SonarQubeConfig,
   TAPDConfig,
