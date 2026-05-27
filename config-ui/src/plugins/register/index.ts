@@ -43,6 +43,7 @@ import { TestmoConfig } from './testmo';
 import { SlackConfig } from './slack/config';
 import { SentryConfig } from './sentry';
 import { ClaudeCodeConfig } from './claude-code';
+import { LinearConfig } from './linear';
 
 export const pluginConfigs: IPluginConfig[] = [
   ArgoCDConfig,
@@ -63,6 +64,7 @@ export const pluginConfigs: IPluginConfig[] = [
   SlackConfig,
   SentryConfig,
   ClaudeCodeConfig,
+  LinearConfig,
   QDevConfig,
   SonarQubeConfig,
   TAPDConfig,
