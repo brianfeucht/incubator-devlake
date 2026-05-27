@@ -38,12 +38,13 @@ type LinearConn struct {
 	RateLimitPerHour      int    `mapstructure:"rateLimitPerHour" json:"rateLimitPerHour"`
 }
 
-// SetupAuthentication attaches the Bearer token to every API request.
+// SetupAuthentication attaches the API key to every request.
+// Linear API keys (lin_api_...) must be sent without the "Bearer" prefix.
 func (conn *LinearConn) SetupAuthentication(req *http.Request) errors.Error {
 	if conn == nil || strings.TrimSpace(conn.Token) == "" {
 		return errors.BadInput.New("token is required")
 	}
-	req.Header.Set("Authorization", "Bearer "+strings.TrimSpace(conn.Token))
+	req.Header.Set("Authorization", strings.TrimSpace(conn.Token))
 	return nil
 }
 

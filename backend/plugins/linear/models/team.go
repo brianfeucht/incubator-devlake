@@ -28,12 +28,10 @@ var _ plugin.ToolLayerScope = (*LinearTeam)(nil)
 // LinearTeam represents a Linear team, used as the DevLake data scope.
 type LinearTeam struct {
 	common.Scope  `mapstructure:",squash"`
-	ConnectionId  uint64 `json:"connectionId" gorm:"primaryKey"`
 	Id            string `json:"id" gorm:"primaryKey;type:varchar(255)"`
 	Name          string `json:"name" gorm:"type:varchar(255)"`
 	Key           string `json:"key" gorm:"type:varchar(50)"`
 	Description   string `json:"description" gorm:"type:varchar(1000)"`
-	ScopeConfigId uint64 `json:"scopeConfigId"`
 }
 
 func (LinearTeam) TableName() string { return "_tool_linear_teams" }

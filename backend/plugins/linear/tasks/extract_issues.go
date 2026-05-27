@@ -51,7 +51,7 @@ type linearIssueResponse struct {
 	CompletedAt   *time.Time `json:"completedAt"`
 	CanceledAt    *time.Time `json:"canceledAt"`
 	StartedAt     *time.Time `json:"startedAt"`
-	DueDate       *time.Time `json:"dueDate"`
+	DueDate       *string    `json:"dueDate"`
 	State         struct {
 		Id   string `json:"id"`
 		Name string `json:"name"`
@@ -104,9 +104,14 @@ func ExtractIssues(taskCtx plugin.SubTaskContext) errors.Error {
 				CompletedAt:   row.CompletedAt,
 				CanceledAt:    row.CanceledAt,
 				StartedAt:     row.StartedAt,
-				DueDate:       row.DueDate,
 				CreatedAt:     row.CreatedAt,
 				UpdatedAt:     row.UpdatedAt,
+			}
+			// DueDate is a date-only field (YYYY-MM-DD) — parse separately
+			if row.DueDate != nil && *row.DueDate != "" {
+				if t, err := time.Parse("2006-01-02", *row.DueDate); err == nil {
+					issue.DueDate = &t
+				}
 			}
 			if row.Assignee != nil {
 				issue.AssigneeId = row.Assignee.Id

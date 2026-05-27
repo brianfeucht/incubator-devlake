@@ -20,7 +20,6 @@ package api
 import (
 	"context"
 	"net/http"
-	"strings"
 
 	"github.com/apache/incubator-devlake/core/errors"
 	"github.com/apache/incubator-devlake/core/plugin"
@@ -83,7 +82,7 @@ func testLinearConnection(connection *models.LinearConnection) (*TestConnectionR
 		"Accept":       "application/json",
 	})
 
-	res, err := apiClient.Post("graphql", nil, strings.NewReader(`{"query":"{ viewer { id name email } }"}`), nil)
+	res, err := apiClient.Post("graphql", nil, map[string]interface{}{"query": "{ viewer { id name email } }"}, nil)
 	if err != nil {
 		return nil, err
 	}

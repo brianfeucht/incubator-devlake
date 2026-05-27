@@ -54,9 +54,9 @@ func listLinearRemoteScopes(
 	if pagination.Cursor != "" {
 		afterClause = `, after: "` + pagination.Cursor + `"`
 	}
-	query := `{"query":"{ teams(first: 50` + afterClause + `) { nodes { id name key description } pageInfo { hasNextPage endCursor } } }"}`
+	gqlQuery := `{ teams(first: 50` + afterClause + `) { nodes { id name key description } pageInfo { hasNextPage endCursor } } }`
 
-	res, apiErr := apiClient.Post("graphql", nil, strings.NewReader(query), nil)
+	res, apiErr := apiClient.Post("graphql", nil, map[string]interface{}{"query": gqlQuery}, nil)
 	if apiErr != nil {
 		return nil, nil, apiErr
 	}
@@ -116,8 +116,7 @@ func searchLinearRemoteScopes(
 	}
 
 	// Fetch all teams (up to 250) and filter locally
-	query := `{"query":"{ teams(first: 250) { nodes { id name key description } } }"}`
-	res, apiErr := apiClient.Post("graphql", nil, strings.NewReader(query), nil)
+	res, apiErr := apiClient.Post("graphql", nil, map[string]interface{}{"query": "{ teams(first: 250) { nodes { id name key description } } }"}, nil)
 	if apiErr != nil {
 		return nil, apiErr
 	}
