@@ -1,0 +1,673 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      },
+      {
+        "datasource": "mysql",
+        "enable": true,
+        "expr": "",
+        "hide": false,
+        "iconColor": "#5794F2",
+        "name": "Copilot Adopted",
+        "rawQuery": true,
+        "rawSql": "SELECT STR_TO_DATE('2025-12-12','%Y-%m-%d') as time, 'GitHub Copilot Adopted' as text, 'copilot' as tags",
+        "showIn": 0,
+        "type": "tags"
+      }
+    ]
+  },
+  "description": "Track engineering productivity gains from AI adoption. Copilot data available from Dec 2025.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "📊 At a Glance",
+      "type": "row"
+    },
+    {
+      "datasource": "mysql",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{"color": "red","value": null},{"color": "yellow","value": 20},{"color": "green","value": 30}] },
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "id": 1,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT ROUND(SUM(loc_added_sum)/NULLIF(SUM(loc_suggested_to_add_sum),0)*100,1) AS 'Copilot Acceptance %'\nFROM _tool_copilot_user_daily_metrics\nWHERE day >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 30 DAY), '%Y-%m-%d')",
+        "refId": "A"
+      }],
+      "title": "Copilot Acceptance Rate (30d)",
+      "type": "stat"
+    },
+    {
+      "datasource": "mysql",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "blue","value": null}] },
+          "unit": "none",
+          "decimals": 0
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "id": 2,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT SUM(loc_added_sum) AS 'LOC Accepted (30d)'\nFROM _tool_copilot_user_daily_metrics\nWHERE day >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 30 DAY), '%Y-%m-%d')",
+        "refId": "A"
+      }],
+      "title": "AI Lines of Code (30d)",
+      "type": "stat"
+    },
+    {
+      "datasource": "mysql",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "red","value": null},{"color": "yellow","value": 24},{"color": "green","value": 48}] },
+          "unit": "h",
+          "decimals": 1
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "id": 3,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT ROUND(AVG(TIMESTAMPDIFF(HOUR, created_date, merged_date)),1) AS 'Avg Merge Time (hrs)'\nFROM pull_requests\nWHERE merged_date IS NOT NULL\n  AND merged_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)",
+        "refId": "A"
+      }],
+      "title": "Avg PR Merge Time (30d)",
+      "type": "stat"
+    },
+    {
+      "datasource": "mysql",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "blue","value": null}] },
+          "unit": "none",
+          "decimals": 0
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT COUNT(*) AS 'PRs Merged (30d)'\nFROM pull_requests\nWHERE merged_date IS NOT NULL\n  AND merged_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)",
+        "refId": "A"
+      }],
+      "title": "PRs Merged (30d)",
+      "type": "stat"
+    },
+    {
+      "datasource": "mysql",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "blue","value": null}] },
+          "unit": "none",
+          "decimals": 0
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
+      "id": 5,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT COUNT(*) AS 'Commits (30d)'\nFROM commits\nWHERE authored_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)",
+        "refId": "A"
+      }],
+      "title": "Commits (30d)",
+      "type": "stat"
+    },
+    {
+      "datasource": "mysql",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{"color": "green","value": null},{"color": "yellow","value": 10},{"color": "red","value": 50}] },
+          "unit": "none",
+          "decimals": 0
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
+      "id": 6,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT COUNT(*) AS 'Active Sentry Bugs'\nFROM issues\nWHERE type = 'BUG' AND status != 'DONE' AND resolution_date IS NULL\n  AND created_date >= DATE_SUB(NOW(), INTERVAL 90 DAY)",
+        "refId": "A"
+      }],
+      "title": "Active Sentry Bugs (90d)",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 101,
+      "title": "🤖 AI (Copilot) Adoption",
+      "type": "row"
+    },
+    {
+      "datasource": "mysql",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "Lines of Code", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "bars", "fillOpacity": 60, "gradientMode": "none", "lineWidth": 1, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "unit": "none"
+        }
+      },
+      "gridPos": { "h": 8, "w": 14, "x": 0, "y": 6 },
+      "id": 10,
+      "options": { "legend": { "calcs": ["sum"], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
+      "targets": [
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  STR_TO_DATE(day, '%Y-%m-%d') as time,\n  SUM(loc_suggested_to_add_sum) as 'LOC Suggested'\nFROM _tool_copilot_user_daily_metrics\nWHERE $__timeFilter(day)\nGROUP BY day\nORDER BY day",
+          "refId": "A"
+        },
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  STR_TO_DATE(day, '%Y-%m-%d') as time,\n  SUM(loc_added_sum) as 'LOC Accepted'\nFROM _tool_copilot_user_daily_metrics\nWHERE $__timeFilter(day)\nGROUP BY day\nORDER BY day",
+          "refId": "B"
+        }
+      ],
+      "title": "Copilot Daily LOC — Suggested vs Accepted",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "mysql",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisLabel": "", "drawStyle": "line", "fillOpacity": 20, "lineWidth": 2, "pointSize": 4, "showPoints": "auto", "spanNulls": false },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Active Users" },
+            "properties": [
+              { "id": "unit", "value": "none" },
+              { "id": "custom.axisPlacement", "value": "right" }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 10, "x": 14, "y": 6 },
+      "id": 11,
+      "options": { "legend": { "calcs": ["mean", "last"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
+      "targets": [
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  STR_TO_DATE(day, '%Y-%m-%d') as time,\n  ROUND(SUM(loc_added_sum)/NULLIF(SUM(loc_suggested_to_add_sum),0)*100, 1) as 'Acceptance Rate %'\nFROM _tool_copilot_user_daily_metrics\nWHERE $__timeFilter(day)\nGROUP BY day\nORDER BY day",
+          "refId": "A"
+        },
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  STR_TO_DATE(day, '%Y-%m-%d') as time,\n  COUNT(DISTINCT login) as 'Active Users'\nFROM _tool_copilot_user_daily_metrics\nWHERE $__timeFilter(day)\nGROUP BY day\nORDER BY day",
+          "refId": "B"
+        }
+      ],
+      "title": "Copilot Acceptance Rate & Active Users",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 102,
+      "title": "⚡ Engineering Velocity",
+      "type": "row"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Weekly commit volume. Copilot adopted Dec 2025 (vertical annotation).",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisLabel": "Commits", "drawStyle": "bars", "fillOpacity": 60, "lineWidth": 1, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" } },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Active Authors" },
+            "properties": [
+              { "id": "custom.drawStyle", "value": "line" },
+              { "id": "custom.fillOpacity", "value": 0 },
+              { "id": "custom.lineWidth", "value": 2 },
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "unit", "value": "none" }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
+      "id": 20,
+      "options": { "legend": { "calcs": ["sum", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
+      "targets": [
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DATE(authored_date - INTERVAL WEEKDAY(authored_date) DAY) as time,\n  COUNT(*) as 'Commits'\nFROM commits\nWHERE $__timeFilter(authored_date)\nGROUP BY time\nORDER BY time",
+          "refId": "A"
+        },
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DATE(authored_date - INTERVAL WEEKDAY(authored_date) DAY) as time,\n  COUNT(DISTINCT author_email) as 'Active Authors'\nFROM commits\nWHERE $__timeFilter(authored_date)\nGROUP BY time\nORDER BY time",
+          "refId": "B"
+        }
+      ],
+      "title": "Weekly Commits & Active Authors",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "mysql",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisLabel": "PRs", "drawStyle": "bars", "fillOpacity": 60, "lineWidth": 1, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" } },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Avg Merge Time (hrs)" },
+            "properties": [
+              { "id": "custom.drawStyle", "value": "line" },
+              { "id": "custom.fillOpacity", "value": 0 },
+              { "id": "custom.lineWidth", "value": 2 },
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "unit", "value": "h" }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
+      "id": 21,
+      "options": { "legend": { "calcs": ["sum", "mean"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
+      "targets": [
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DATE(created_date - INTERVAL WEEKDAY(created_date) DAY) as time,\n  COUNT(*) as 'PRs Opened'\nFROM pull_requests\nWHERE $__timeFilter(created_date)\nGROUP BY time\nORDER BY time",
+          "refId": "A"
+        },
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DATE(merged_date - INTERVAL WEEKDAY(merged_date) DAY) as time,\n  COUNT(*) as 'PRs Merged'\nFROM pull_requests\nWHERE merged_date IS NOT NULL AND $__timeFilter(merged_date)\nGROUP BY time\nORDER BY time",
+          "refId": "B"
+        },
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DATE(merged_date - INTERVAL WEEKDAY(merged_date) DAY) as time,\n  ROUND(AVG(TIMESTAMPDIFF(HOUR, created_date, merged_date)), 1) as 'Avg Merge Time (hrs)'\nFROM pull_requests\nWHERE merged_date IS NOT NULL AND $__timeFilter(merged_date)\nGROUP BY time\nORDER BY time",
+          "refId": "C"
+        }
+      ],
+      "title": "Weekly PRs Opened, Merged & Cycle Time",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "id": 103,
+      "title": "🔍 PR Quality & Size",
+      "type": "row"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Average PR merge time by month. A declining trend after Dec 2025 indicates AI is accelerating code review.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 20, "lineWidth": 2, "pointSize": 5, "showPoints": "always", "spanNulls": true },
+          "unit": "h"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 24 },
+      "id": 30,
+      "options": { "legend": { "calcs": ["mean", "min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  STR_TO_DATE(DATE_FORMAT(merged_date, '%Y-%m-01'), '%Y-%m-%d') as time,\n  ROUND(AVG(TIMESTAMPDIFF(HOUR, created_date, merged_date)), 1) as 'Avg Merge Time (hrs)',\n  ROUND(AVG(TIMESTAMPDIFF(HOUR, created_date, merged_date)) * 0.75, 1) as 'P75 Estimate'\nFROM pull_requests\nWHERE merged_date IS NOT NULL AND $__timeFilter(merged_date)\nGROUP BY DATE_FORMAT(merged_date, '%Y-%m-01')\nORDER BY time",
+        "refId": "A"
+      }],
+      "title": "Monthly PR Merge Time Trend",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Average PR size (additions) per month. AI may help write more focused, smaller PRs.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "bars", "fillOpacity": 60, "lineWidth": 1, "showPoints": "never", "spanNulls": true },
+          "unit": "none"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 24 },
+      "id": 31,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  STR_TO_DATE(DATE_FORMAT(merged_date, '%Y-%m-01'), '%Y-%m-%d') as time,\n  ROUND(AVG(additions)) as 'Avg Additions',\n  ROUND(AVG(deletions)) as 'Avg Deletions'\nFROM pull_requests\nWHERE merged_date IS NOT NULL AND additions IS NOT NULL AND $__timeFilter(merged_date)\nGROUP BY DATE_FORMAT(merged_date, '%Y-%m-01')\nORDER BY time",
+        "refId": "A"
+      }],
+      "title": "Monthly Avg PR Size (Lines)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Distribution of PR sizes. Smaller PRs are easier to review and merge faster.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "none"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 24 },
+      "id": 32,
+      "options": { "barWidth": 0.7, "fillOpacity": 80, "gradientMode": "none", "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "single" }, "xTickLabelRotation": -20, "xTickLabelSpacing": 100 },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  CASE\n    WHEN additions < 50 THEN 'XS (<50)'\n    WHEN additions < 200 THEN 'S (50-200)'\n    WHEN additions < 500 THEN 'M (200-500)'\n    WHEN additions < 1000 THEN 'L (500-1k)'\n    ELSE 'XL (1k+)'\n  END as 'PR Size',\n  COUNT(*) as 'Count'\nFROM pull_requests\nWHERE merged_date IS NOT NULL AND additions IS NOT NULL\n  AND $__timeFilter(merged_date)\nGROUP BY 1\nORDER BY FIELD(`PR Size`, 'XS (<50)', 'S (50-200)', 'M (200-500)', 'L (500-1k)', 'XL (1k)')",
+        "refId": "A"
+      }],
+      "title": "PR Size Distribution",
+      "transformations": [{ "id": "prepareTimeSeries", "options": {} }],
+      "type": "barchart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 32 },
+      "id": 104,
+      "title": "📋 Linear Project Health",
+      "type": "row"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Summary of completed and active Linear sprints/cycles.",
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "auto", "displayMode": "auto", "inspect": false }, "mappings": [], "thresholds": { "mode": "absolute", "steps": [{"color": "green","value": null}] } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Completed" }, "properties": [{ "id": "custom.displayMode", "value": "color-background" }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [{"color": "green","value": null}] } }] },
+          { "matcher": { "id": "byName", "options": "In Progress" }, "properties": [{ "id": "custom.displayMode", "value": "color-background" }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [{"color": "blue","value": null}] } }] },
+          { "matcher": { "id": "byName", "options": "Completion %" }, "properties": [{ "id": "custom.displayMode", "value": "gradient-gauge" }, { "id": "min", "value": 0 }, { "id": "max", "value": 100 }, { "id": "unit", "value": "percent" }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 33 },
+      "id": 40,
+      "options": { "footer": { "fields": "", "reducer": ["sum"], "show": false }, "showHeader": true },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  c.name as 'Cycle',\n  DATE_FORMAT(c.starts_at, '%m/%d/%Y') as 'Start',\n  DATE_FORMAT(c.ends_at, '%m/%d/%Y') as 'End',\n  COUNT(i.id) as 'Total Issues',\n  SUM(CASE WHEN i.state_type = 'completed' THEN 1 ELSE 0 END) as 'Completed',\n  SUM(CASE WHEN i.state_type = 'started' THEN 1 ELSE 0 END) as 'In Progress',\n  SUM(CASE WHEN i.state_type IN ('backlog','triage') THEN 1 ELSE 0 END) as 'Backlog',\n  ROUND(SUM(CASE WHEN i.state_type = 'completed' THEN 1 ELSE 0 END) / NULLIF(COUNT(i.id),0) * 100, 0) as 'Completion %',\n  CASE WHEN c.completed_at IS NOT NULL THEN '✅ Done' ELSE '🔄 Active' END as 'Status'\nFROM _tool_linear_cycles c\nLEFT JOIN _tool_linear_issues i ON i.cycle_id = c.id\nGROUP BY c.id, c.name, c.starts_at, c.ends_at, c.completed_at\nORDER BY c.starts_at DESC\nLIMIT 10",
+        "refId": "A"
+      }],
+      "title": "Linear Sprint / Cycle Summary",
+      "type": "table"
+    },
+    {
+      "datasource": "mysql",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisLabel": "Issues", "drawStyle": "bars", "fillOpacity": 60, "lineWidth": 1, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" } },
+          "unit": "none"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 33 },
+      "id": 41,
+      "options": { "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DATE(created_at - INTERVAL WEEKDAY(created_at) DAY) as time,\n  COUNT(*) as 'Issues Created'\nFROM _tool_linear_issues\nWHERE $__timeFilter(created_at)\nGROUP BY time\nORDER BY time",
+          "refId": "A"
+        },
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DATE(completed_at - INTERVAL WEEKDAY(completed_at) DAY) as time,\n  COUNT(*) as 'Issues Completed'\nFROM _tool_linear_issues\nWHERE completed_at IS NOT NULL AND $__timeFilter(completed_at)\nGROUP BY time\nORDER BY time",
+          "refId": "B"
+        }
+      ],
+      "title": "Linear Issues Created & Completed",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Distribution of issue cycle times (hours from creation to completion).",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 20, "lineWidth": 2, "pointSize": 6, "showPoints": "always", "spanNulls": true },
+          "unit": "h"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 41 },
+      "id": 42,
+      "options": { "legend": { "calcs": ["mean", "last"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  STR_TO_DATE(DATE_FORMAT(completed_at, '%Y-%m-01'), '%Y-%m-%d') as time,\n  ROUND(AVG(TIMESTAMPDIFF(HOUR, created_at, completed_at)), 1) as 'Avg Close Time (hrs)',\n  ROUND(MIN(TIMESTAMPDIFF(HOUR, created_at, completed_at)), 1) as 'Min Close Time (hrs)'\nFROM _tool_linear_issues\nWHERE completed_at IS NOT NULL AND $__timeFilter(completed_at)\nGROUP BY DATE_FORMAT(completed_at, '%Y-%m-01')\nORDER BY time",
+        "refId": "A"
+      }],
+      "title": "Linear Issue Close Time Trend",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Issues by priority. High priority bugs should decrease as AI helps catch issues earlier.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "none"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 41 },
+      "id": 43,
+      "options": { "barWidth": 0.7, "fillOpacity": 80, "gradientMode": "none", "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "single" } },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  COALESCE(priority_label, 'No Priority') as 'Priority',\n  state_type as 'State',\n  COUNT(*) as 'Count'\nFROM _tool_linear_issues\nGROUP BY priority_label, state_type\nORDER BY priority, state_type",
+        "refId": "A"
+      }],
+      "title": "Linear Issues by Priority & State",
+      "transformations": [
+        { "id": "groupBy", "options": { "fields": { "Priority": { "aggregations": [], "operation": "groupby" }, "State": { "aggregations": [], "operation": "groupby" }, "Count": { "aggregations": ["sum"], "operation": "aggregate" } } } }
+      ],
+      "type": "barchart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 49 },
+      "id": 105,
+      "title": "🐛 Bugs & Incidents",
+      "type": "row"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Sentry bugs opened per month. A declining trend indicates improving code quality from AI adoption.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisLabel": "Bugs", "drawStyle": "bars", "fillOpacity": 70, "lineWidth": 1, "showPoints": "never", "spanNulls": false },
+          "unit": "none"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 50 },
+      "id": 50,
+      "options": { "legend": { "calcs": ["sum", "mean"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  STR_TO_DATE(DATE_FORMAT(created_date, '%Y-%m-01'), '%Y-%m-%d') as time,\n  COUNT(*) as 'New Sentry Bugs',\n  SUM(CASE WHEN resolution_date IS NOT NULL THEN 1 ELSE 0 END) as 'Resolved'\nFROM issues\nWHERE type = 'BUG' AND $__timeFilter(created_date)\nGROUP BY DATE_FORMAT(created_date, '%Y-%m-01')\nORDER BY time",
+        "refId": "A"
+      }],
+      "title": "Monthly Sentry Bugs Opened vs Resolved",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Rootly incidents over time with MTTR. Lower incidents and faster resolution indicates more stable deployments.",
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "auto", "displayMode": "auto" }, "thresholds": { "mode": "absolute", "steps": [{"color": "green","value": null},{"color": "red","value": 80}] } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "MTTR (hrs)" }, "properties": [{ "id": "custom.displayMode", "value": "color-background" }, { "id": "thresholds", "value": { "mode": "absolute", "steps": [{"color": "green","value": null},{"color": "yellow","value": 4},{"color": "red","value": 24}] } }] },
+          { "matcher": { "id": "byName", "options": "Status" }, "properties": [{ "id": "custom.displayMode", "value": "color-background" }, { "id": "mappings", "value": [{"options":{"DONE":{"color":"green","index":0},"IN_PROGRESS":{"color":"red","index":1}},"type":"value"}] }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 50 },
+      "id": 51,
+      "options": { "footer": { "show": false }, "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Created" }] },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "table",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  title as 'Title',\n  status as 'Status',\n  DATE_FORMAT(created_at, '%Y-%m-%d') as 'Created',\n  DATE_FORMAT(resolved_at, '%Y-%m-%d') as 'Resolved',\n  ROUND(TIMESTAMPDIFF(MINUTE, created_at, COALESCE(resolved_at, NOW())) / 60.0, 1) as 'MTTR (hrs)'\nFROM _tool_rootly_incidents\nORDER BY created_at DESC",
+        "refId": "A"
+      }],
+      "title": "Rootly Incidents",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 58 },
+      "id": 106,
+      "title": "📦 Deployment Health",
+      "type": "row"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Production deployments per week. More frequent deployments with low failure rate indicate CI/CD maturity.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisLabel": "Deployments", "drawStyle": "bars", "fillOpacity": 60, "lineWidth": 1, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" } },
+          "unit": "none"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 59 },
+      "id": 60,
+      "options": { "legend": { "calcs": ["sum", "mean"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DATE(finished_date - INTERVAL WEEKDAY(finished_date) DAY) as time,\n  COUNT(DISTINCT cicd_deployment_id) as 'Successful Deploys'\nFROM cicd_deployment_commits\nJOIN project_mapping pm ON cicd_scope_id = pm.row_id AND pm.`table` = 'cicd_scopes'\nWHERE pm.project_name = 'renew-platform'\n  AND environment = 'PRODUCTION'\n  AND result = 'SUCCESS'\n  AND $__timeFilter(finished_date)\nGROUP BY time\nORDER BY time",
+          "refId": "A"
+        },
+        {
+          "datasource": "mysql",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DATE(finished_date - INTERVAL WEEKDAY(finished_date) DAY) as time,\n  COUNT(DISTINCT cicd_deployment_id) as 'Failed Deploys'\nFROM cicd_deployment_commits\nJOIN project_mapping pm ON cicd_scope_id = pm.row_id AND pm.`table` = 'cicd_scopes'\nWHERE pm.project_name = 'renew-platform'\n  AND environment = 'PRODUCTION'\n  AND result = 'FAILURE'\n  AND $__timeFilter(finished_date)\nGROUP BY time\nORDER BY time",
+          "refId": "B"
+        }
+      ],
+      "title": "Weekly Production Deployments (Success vs Failure)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "mysql",
+      "description": "Lead time from PR merge to production. Shorter lead time = faster value delivery.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 20, "lineWidth": 2, "pointSize": 6, "showPoints": "always", "spanNulls": true },
+          "unit": "h"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 59 },
+      "id": 61,
+      "options": { "legend": { "calcs": ["mean", "min", "last"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [{
+        "datasource": "mysql",
+        "format": "time_series",
+        "rawQuery": true,
+        "rawSql": "SELECT\n  STR_TO_DATE(DATE_FORMAT(cdc.finished_date, '%Y-%m-01'), '%Y-%m-%d') as time,\n  ROUND(AVG(ppm.pr_cycle_time) / 3600.0, 2) as 'Avg Lead Time (hrs)'\nFROM project_pr_metrics ppm\nJOIN pull_requests pr ON ppm.id = pr.id\nJOIN project_mapping pm ON pr.base_repo_id = pm.row_id AND pm.`table` = 'repos'\nJOIN cicd_deployment_commits cdc ON ppm.deployment_commit_id = cdc.id\nWHERE pm.project_name = 'renew-platform'\n  AND pr.merged_date IS NOT NULL\n  AND ppm.pr_cycle_time IS NOT NULL\n  AND $__timeFilter(cdc.finished_date)\nGROUP BY DATE_FORMAT(cdc.finished_date, '%Y-%m-01')\nORDER BY time",
+        "refId": "A"
+      }],
+      "title": "Monthly Lead Time for Changes (PR → Production)",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5m",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": ["ai", "productivity", "copilot", "engineering"],
+  "templating": {
+    "list": []
+  },
+  "time": { "from": "now-6M", "to": "now" },
+  "timepicker": {},
+  "timezone": "utc",
+  "title": "AI Productivity Gains",
+  "uid": "ai_productivity_gains",
+  "version": 1
+}
